@@ -8,7 +8,6 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\ViewAction;
 use HoceineEl\FilamentModularSubscriptions\Enums\PaymentStatus;
 use HoceineEl\FilamentModularSubscriptions\Resources\InvoiceResource\Pages;
 use Illuminate\Support\Facades\View;
@@ -48,7 +47,7 @@ class InvoiceResource extends Resource
                 TextEntry::make('subscription.subscriber.name')
                     ->label(__('filament-modular-subscriptions::modular-subscriptions.resources.invoice.fields.subscription_id')),
                 TextEntry::make('amount')
-                    ->money(fn($record) => $record->subscription->plan->currency, locale: 'en')
+                    ->money(fn ($record) => $record->subscription->plan->currency, locale: 'en')
                     ->label(__('filament-modular-subscriptions::modular-subscriptions.resources.invoice.fields.amount')),
                 TextEntry::make('status')
                     ->badge()
@@ -72,7 +71,7 @@ class InvoiceResource extends Resource
                     ->label(__('filament-modular-subscriptions::modular-subscriptions.resources.invoice.fields.subscription_id'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->money(fn($record) => $record->subscription->plan->currency)
+                    ->money(fn ($record) => $record->subscription->plan->currency)
                     ->label(__('filament-modular-subscriptions::modular-subscriptions.resources.invoice.fields.amount'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
@@ -96,9 +95,10 @@ class InvoiceResource extends Resource
             ->actions([
                 Action::make('view')
                     ->slideOver()
-                    ->modalHeading(fn($record) => __('filament-modular-subscriptions::modular-subscriptions.invoice.details_title', ['number' => $record->id]))
+                    ->modalHeading(fn ($record) => __('filament-modular-subscriptions::modular-subscriptions.invoice.details_title', ['number' => $record->id]))
                     ->modalContent(function ($record) {
                         $invoice = $record;
+
                         return View::make('filament-modular-subscriptions::pages.invoice-details', compact('invoice'));
                     }),
                 Action::make('download')
@@ -107,6 +107,7 @@ class InvoiceResource extends Resource
                     ->action(function ($record) {
                         $invoice = $record;
                         $pdf = Pdf::loadView('filament-modular-subscriptions::pages.invoice-pdf', compact('invoice'));
+
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
                         }, "invoice-{$invoice->id}-{$invoice->created_at->format('Y-m-d')}.pdf");
